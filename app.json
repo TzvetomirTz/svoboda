@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "freeform",
+    "slug": "freeform",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "freeform",
+    "userInterfaceStyle": "light",
+    "web": {
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
