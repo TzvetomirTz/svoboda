@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "freeform",
-    "slug": "freeform",
+    "name": "Svoboda",
+    "slug": "svoboda",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "freeform",
+    "scheme": "svoboda",
     "userInterfaceStyle": "light",
     "web": {
       "output": "static"
