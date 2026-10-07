@@ -93,12 +93,22 @@ Updates install the same way and keep your identity and contacts.
 
 Svoboda isn't on the App Store. You can sideload it with your own Apple ID, at no cost:
 
-1. Install [AltStore](https://altstore.io), [SideStore](https://sidestore.io) or [Sideloadly](https://sideloadly.io) by following its guide.
+With a free Apple ID, a sideloaded app stops opening after 7 days unless it's refreshed. That's what sets the tools apart:
+
+| | Computer needed | Refreshing every 7 days | Best for |
+|---|---|---|---|
+| **[SideStore](https://sidestore.io)** · *recommended* | Only for the first setup | On the phone, anywhere with internet | Using Svoboda day to day |
+| **[Sideloadly](https://sideloadly.io)** | Every install | Sideload it again from the computer | Trying Svoboda once |
+| **[AltStore](https://altstore.io)** | Setup and every refresh | Automatic, while the computer is on the same Wi-Fi | People who already use AltStore |
+
+**We recommend SideStore** because Svoboda only helps if it opens when a message arrives. After a one-time setup, SideStore refreshes the app on the phone itself, so it doesn't quietly stop working because a computer was out of reach that week. Its setup takes longer than the others; if you only want to try Svoboda, Sideloadly is the quickest start.
+
+1. Install SideStore (or Sideloadly) by following its own guide.
 2. Download `Svoboda-<version>-unsigned.ipa` from the [latest release](https://github.com/TzvetomirTz/svoboda/releases/latest).
 3. Open it with that app and sign in with your Apple ID when asked.
 
 > [!NOTE]
-> With a free Apple ID, the install expires after 7 days. AltStore and SideStore can refresh it automatically; with Sideloadly, sideload it again. Your identity and contacts stay on the phone as long as you don't delete the app. A free Apple ID can have three sideloaded apps at a time.
+> Your identity and contacts stay on the phone as long as you don't delete the app, even if a refresh is missed. A free Apple ID can have three sideloaded apps at a time. These tools sometimes break for a while after an iOS update; check their pages if installing fails.
 
 <br>
 
