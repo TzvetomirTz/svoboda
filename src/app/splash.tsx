@@ -7,15 +7,24 @@ import { Text } from '@/components/text';
 import { layout, spacing, typography } from '@/constants/theme';
 import { useColors } from '@/hooks/use-colors';
 import { IdentityStorageUnavailableError, loadIdentity } from '@/lib/identity';
+import { useAppState } from '@/state/app-state';
 
 export default function Splash() {
   const colors = useColors();
+  const { setIdentity, contactsLoaded } = useAppState();
   const [unsupported, setUnsupported] = useState(false);
 
   useEffect(() => {
+    if (!contactsLoaded) return;
+
     loadIdentity()
       .then((identity) => {
-        if (!identity) router.replace('/create-identity');
+        if (!identity) {
+          router.replace('/create-identity');
+          return;
+        }
+        setIdentity(identity);
+        router.replace('/send');
       })
       .catch((error) => {
         if (error instanceof IdentityStorageUnavailableError) {
@@ -25,7 +34,7 @@ export default function Splash() {
         // Never send the user to create a new identity when the existing one just failed to load.
         console.error('Could not load identity', error);
       });
-  }, []);
+  }, [contactsLoaded, setIdentity]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.paper }]}>

@@ -3,6 +3,9 @@ import { ml_kem768 } from '@noble/post-quantum/ml-kem.js';
 import { getRandomBytes } from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
+import { bytesToHex, hexToBytes } from './encoding';
+import { fingerprint } from './fingerprint';
+
 // Only the keygen seeds are stored: the full secret keys (2,400 B + 4,032 B) exceed what the
 // iOS keychain reliably accepts, and both algorithms derive the same key pair from the same seed.
 const STORAGE_KEY = 'svoboda.identity.v1';
@@ -23,6 +26,7 @@ type StoredIdentity = {
 
 export type Identity = {
   name: string;
+  fingerprint: Uint8Array;
   /** ML-KEM-768: others encrypt to you with `publicKey`. */
   encryption: { publicKey: Uint8Array; secretKey: Uint8Array };
   /** ML-DSA-65: you sign with `secretKey`, others verify with `publicKey`. */
@@ -45,7 +49,7 @@ export async function loadIdentity(): Promise<Identity | null> {
   if (raw === null) return null;
 
   const stored = JSON.parse(raw) as StoredIdentity;
-  return deriveIdentity(stored.name, fromHex(stored.kemSeed), fromHex(stored.dsaSeed));
+  return deriveIdentity(stored.name, hexToBytes(stored.kemSeed), hexToBytes(stored.dsaSeed));
 }
 
 /** Generates a new key pair on this device and stores it. Refuses to replace an existing identity. */
@@ -56,24 +60,14 @@ export async function createIdentity(name: string): Promise<Identity> {
 
   const kemSeed = getRandomBytes(KEM_SEED_BYTES);
   const dsaSeed = getRandomBytes(DSA_SEED_BYTES);
-  const stored: StoredIdentity = { v: 1, name, kemSeed: toHex(kemSeed), dsaSeed: toHex(dsaSeed) };
+  const stored: StoredIdentity = { v: 1, name, kemSeed: bytesToHex(kemSeed), dsaSeed: bytesToHex(dsaSeed) };
 
   await SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(stored), storeOptions);
   return deriveIdentity(name, kemSeed, dsaSeed);
 }
 
 function deriveIdentity(name: string, kemSeed: Uint8Array, dsaSeed: Uint8Array): Identity {
-  return {
-    name,
-    encryption: ml_kem768.keygen(kemSeed),
-    signing: ml_dsa65.keygen(dsaSeed),
-  };
-}
-
-function toHex(bytes: Uint8Array) {
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-function fromHex(hex: string) {
-  return Uint8Array.from(hex.match(/../g) ?? [], (byte) => parseInt(byte, 16));
+  const encryption = ml_kem768.keygen(kemSeed);
+  const signing = ml_dsa65.keygen(dsaSeed);
+  return { name, fingerprint: fingerprint(encryption.publicKey, signing.publicKey), encryption, signing };
 }

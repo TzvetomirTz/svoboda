@@ -1,13 +1,15 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path, Rect } from 'react-native-svg';
 
+import { Screen } from '@/components/screen';
+import { ScreenTitle } from '@/components/screen-title';
 import { Text } from '@/components/text';
 import { fonts, layout, radius, spacing, typography } from '@/constants/theme';
 import { useColors } from '@/hooks/use-colors';
 import { createIdentity } from '@/lib/identity';
+import { useAppState } from '@/state/app-state';
 
 const details = [
   { label: 'Encryption', value: 'ML-KEM-768' },
@@ -17,6 +19,7 @@ const details = [
 
 export default function CreateIdentity() {
   const colors = useColors();
+  const { setIdentity } = useAppState();
   const [name, setName] = useState('');
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,8 +33,8 @@ export default function CreateIdentity() {
     // Let "Generating keys" render before key generation blocks the JS thread.
     setTimeout(async () => {
       try {
-        await createIdentity(trimmed);
-        router.replace('/splash');
+        setIdentity(await createIdentity(trimmed));
+        router.replace('/send');
       } catch (e) {
         console.error('Could not create identity', e);
         setError('Could not create your identity. Try again.');
@@ -41,17 +44,14 @@ export default function CreateIdentity() {
   }
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: colors.paper }]}>
+    <Screen>
       <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.top}>
           <Text style={[styles.wordmark, { color: colors.ink }]}>Svoboda.</Text>
           <Text style={[styles.topMeta, { color: colors.muted }]}>Setup</Text>
         </View>
 
-        <Text style={[styles.title, { color: colors.ink }]} accessibilityRole="header">
-          Create your identity
-        </Text>
-        <View style={[styles.rule, { backgroundColor: colors.ink }]} />
+        <ScreenTitle>Create your identity</ScreenTitle>
 
         <Text style={[styles.intro, { color: colors.muted }]}>
           Svoboda generates a key pair on this device. The public key is what you share. The private key never
@@ -109,7 +109,7 @@ export default function CreateIdentity() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -142,16 +142,6 @@ const styles = StyleSheet.create({
   topMeta: {
     fontFamily: fonts.mono,
     fontSize: 12,
-  },
-  title: {
-    ...typography.display,
-    paddingTop: 24,
-    paddingHorizontal: layout.margin,
-  },
-  rule: {
-    height: layout.rule,
-    marginTop: layout.margin,
-    marginHorizontal: layout.margin,
   },
   intro: {
     ...typography.body,
