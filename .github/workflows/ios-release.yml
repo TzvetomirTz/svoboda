@@ -1,0 +1,97 @@
+# Builds an unsigned iOS app (.ipa) for sideloading with AltStore, SideStore or Sideloadly,
+# which sign it with the installer's own Apple ID. No Apple Developer account is needed here.
+#
+# Push a version tag (v1.0.0) to attach the .ipa to that tag's GitHub Release, creating the
+# release as a draft if it doesn't exist yet. Run it by hand to get the .ipa as a build artifact.
+
+name: iOS release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ios-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      XCODE_APP: /Applications/Xcode_26.6.app
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Check the tag matches the app version
+        if: github.ref_type == 'tag'
+        run: |
+          app_version="v$(node -p "require('./app.json').expo.version")"
+          if [ "$app_version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match app.json version $app_version"
+            exit 1
+          fi
+
+      - name: Select Xcode
+        run: sudo xcode-select -s "$XCODE_APP"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate the native iOS project
+        run: npx expo prebuild --platform ios --clean --no-install
+
+      - name: Install CocoaPods
+        working-directory: ios
+        run: pod install
+
+      - name: Build without code signing
+        run: |
+          xcodebuild \
+            -workspace ios/Svoboda.xcworkspace \
+            -scheme Svoboda \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package the .ipa
+        run: |
+          version="$(node -p "require('./app.json').expo.version")"
+          echo "IPA=Svoboda-$version-unsigned.ipa" >> "$GITHUB_ENV"
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/Svoboda.app Payload/
+          zip -qry "Svoboda-$version-unsigned.ipa" Payload
+
+      - name: Attach to the GitHub Release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" --draft --title "Svoboda $GITHUB_REF_NAME" \
+              --notes "Add the Android APK from EAS, then publish this release."
+          fi
+          gh release upload "$GITHUB_REF_NAME" "$IPA" --clobber
+
+      - name: Keep as a build artifact
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.IPA }}
+          path: ${{ env.IPA }}
+          retention-days: 14

@@ -42,14 +42,16 @@
         "light": "./assets/images/icon.png",
         "dark": "./assets/images/icon-dark.png",
         "tinted": "./assets/images/icon-tinted.png"
-      }
+      },
+      "bundleIdentifier": "com.oblivionware.svoboda"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-foreground.png",
         "monochromeImage": "./assets/images/android-monochrome.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.oblivionware.svoboda"
     }
   }
 }
