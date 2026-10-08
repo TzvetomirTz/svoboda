@@ -1,10 +1,11 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/button';
 import { CheckIcon } from '@/components/icons';
+import { OblivionWareLogo } from '@/components/oblivionware-logo';
 import { Screen } from '@/components/screen';
 import { ScreenTitle } from '@/components/screen-title';
 import { Text } from '@/components/text';
@@ -15,6 +16,8 @@ import { formatFingerprint } from '@/lib/fingerprint';
 import { deleteIdentity } from '@/lib/identity';
 import { applyTheme, loadTheme, saveTheme, type ThemePreference } from '@/lib/theme';
 import { useAppState } from '@/state/app-state';
+
+const OBLIVIONWARE_URL = 'https://oblivionware.com';
 
 const themes: { value: ThemePreference; label: string }[] = [
   { value: 'system', label: 'Same as phone' },
@@ -71,7 +74,7 @@ export default function Settings() {
   return (
     <Screen>
       <NavBar kind="back" />
-      <ScrollView contentContainerStyle={{ paddingBottom: spacing[8] + insets.bottom }}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: spacing[8] + insets.bottom }]}>
         <ScreenTitle>Settings</ScreenTitle>
 
         <View style={styles.section}>
@@ -119,12 +122,26 @@ export default function Settings() {
             style={styles.delete}
           />
         </View>
+
+        <Pressable
+          onPress={() => Linking.openURL(OBLIVIONWARE_URL)}
+          accessibilityRole="link"
+          accessibilityLabel="Powered by OblivionWare"
+          accessibilityHint="Opens oblivionware.com in your browser"
+          hitSlop={8}
+          style={({ pressed }) => [styles.credit, pressed && styles.pressed]}>
+          <OblivionWareLogo color={colors.muted} size={14} />
+          <Text style={[typography.caption, { color: colors.muted }]}>Powered by OblivionWare</Text>
+        </Pressable>
       </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  content: {
+    flexGrow: 1,
+  },
   section: {
     paddingTop: spacing[8],
     paddingHorizontal: layout.margin,
@@ -165,5 +182,14 @@ const styles = StyleSheet.create({
   },
   delete: {
     marginTop: spacing[4],
+  },
+  // Pinned to the bottom when the settings are shorter than the screen.
+  credit: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    gap: spacing[2],
+    marginTop: 'auto',
+    paddingTop: spacing[12],
   },
 });

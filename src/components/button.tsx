@@ -47,7 +47,8 @@ export function Button({
         { backgroundColor: look.backgroundColor, borderColor: look.borderColor },
         disabled && variant !== 'quiet' && { backgroundColor: colors.paper, borderColor: colors.line },
         disabled && variant === 'quiet' && styles.dimmed,
-        pressed && styles.pressed,
+        // A held danger button fills with pale red instead of dimming, so it reads as destructive.
+        pressed && (variant === 'danger' ? { backgroundColor: colors.alertTint } : styles.pressed),
         style,
       ]}>
       {Icon && <Icon color={color} size={variant === 'quiet' ? 16 : 18} />}

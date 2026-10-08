@@ -16,6 +16,8 @@ export const colors = {
     signal: '#E30613',
     /** Destructive actions and errors, always with text. */
     alert: '#C8102E',
+    /** Pale alert behind a destructive button while it is held. Alert text on it stays above 4.5:1. */
+    alertTint: '#FAE7EA',
   },
   dark: {
     ink: '#F2F2F0',
@@ -25,6 +27,7 @@ export const colors = {
     muted: '#A3A3A0',
     signal: '#FF4A4A',
     alert: '#FF6B6B',
+    alertTint: '#311A1A',
   },
 } as const;
 
