@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { protectScreen } from '@/lib/screen-privacy';
 import { applyTheme, loadTheme } from '@/lib/theme';
 import { AppStateProvider } from '@/state/app-state';
 
@@ -24,6 +25,7 @@ SplashScreen.setOptions({ fade: true, duration: 200 });
 
 // Before the first render, so no screen draws in the wrong theme first.
 applyTheme(loadTheme());
+protectScreen();
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({

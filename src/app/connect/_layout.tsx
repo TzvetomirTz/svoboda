@@ -8,8 +8,9 @@ export default function ConnectLayout() {
   const { identity } = useAppState();
   if (!identity) return <Redirect href="/" />;
 
+  // Back (the X, or Android's back) closes the whole screen instead of returning to Add someone.
   return (
-    <Tabs>
+    <Tabs options={{ backBehavior: 'none' }}>
       <TabSlot />
       <TabList asChild>
         <PillBar accessibilityLabel="Add or be added">
