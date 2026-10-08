@@ -12,7 +12,7 @@ WhatsApp, Telegram or email carry the result. Only the person you wrote to can r
 
 <br>
 
-[![Download for Android](https://img.shields.io/badge/Download-Android-0A0A0A?style=for-the-badge&logo=android&logoColor=white)](https://expo.dev/accounts/oblivionware/projects/svoboda/builds/befe28ce-e06f-46c7-8597-6ba245b68d8d)
+[![Download for Android](https://img.shields.io/badge/Download-Android-0A0A0A?style=for-the-badge&logo=android&logoColor=white)](https://expo.dev/accounts/oblivionware/projects/svoboda/builds)
 &nbsp;
 [![Sideload on iOS](https://img.shields.io/badge/Sideload-iOS-0A0A0A?style=for-the-badge&logo=apple&logoColor=white)](#ios)
 
@@ -83,7 +83,7 @@ Source: [`src/lib/message.ts`](src/lib/message.ts), [`src/lib/contact-card.ts`](
 
 ### Android
 
-1. On your phone, open the [Android download](https://expo.dev/accounts/oblivionware/projects/svoboda/builds/befe28ce-e06f-46c7-8597-6ba245b68d8d) and download the APK.
+1. On your phone, open the [Android download](https://expo.dev/accounts/oblivionware/projects/svoboda/builds) and download the APK.
 2. Open it. If Android asks, allow your browser or file manager to install unknown apps.
 3. Tap **Install**.
 
