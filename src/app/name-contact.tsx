@@ -1,6 +1,7 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/button';
 import { Screen } from '@/components/screen';
@@ -15,6 +16,7 @@ import { useAppState } from '@/state/app-state';
 
 export default function NameContact() {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const { identity, scannedCard, setScannedCard, addContact, selectContact } = useAppState();
   const [name, setName] = useState(scannedCard?.name ?? '');
 
@@ -67,7 +69,7 @@ export default function NameContact() {
           </Text>
         </View>
 
-        <View style={styles.footer}>
+        <View style={[styles.footer, { paddingBottom: Math.max(40, insets.bottom + spacing[2]) }]}>
           <Button label="Save contact" onPress={save} disabled={name.trim().length === 0} />
           <Button label="Cancel" variant="quiet" onPress={() => router.back()} />
         </View>
@@ -113,6 +115,5 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     gap: spacing[2],
     paddingHorizontal: layout.margin,
-    paddingBottom: 40,
   },
 });

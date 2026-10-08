@@ -6,7 +6,7 @@ import type { Identity } from '@/lib/identity';
 
 type AppState = {
   identity: Identity | null;
-  setIdentity: (identity: Identity) => void;
+  setIdentity: (identity: Identity | null) => void;
   contacts: Contact[];
   contactsLoaded: boolean;
   addContact: (contact: Contact) => void;

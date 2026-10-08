@@ -66,6 +66,11 @@ export async function createIdentity(name: string): Promise<Identity> {
   return deriveIdentity(name, kemSeed, dsaSeed);
 }
 
+/** Removes the identity from this device for good. Messages encrypted to it can no longer be read. */
+export async function deleteIdentity(): Promise<void> {
+  await SecureStore.deleteItemAsync(STORAGE_KEY, storeOptions);
+}
+
 function deriveIdentity(name: string, kemSeed: Uint8Array, dsaSeed: Uint8Array): Identity {
   const encryption = ml_kem768.keygen(kemSeed);
   const signing = ml_dsa65.keygen(dsaSeed);

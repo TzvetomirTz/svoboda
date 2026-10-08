@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Rect } from 'react-native-svg';
 
 import { Screen } from '@/components/screen';
@@ -19,6 +20,7 @@ const details = [
 
 export default function CreateIdentity() {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const { setIdentity } = useAppState();
   const [name, setName] = useState('');
   const [generating, setGenerating] = useState(false);
@@ -88,7 +90,7 @@ export default function CreateIdentity() {
           ))}
         </View>
 
-        <View style={styles.footer}>
+        <View style={[styles.footer, { paddingBottom: Math.max(40, insets.bottom + spacing[2]) }]}>
           {error && <Text style={[styles.help, { color: colors.alert }]}>{error}</Text>}
           <Pressable
             onPress={generate}
@@ -182,7 +184,6 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 'auto',
     paddingHorizontal: layout.margin,
-    paddingBottom: 40,
     gap: spacing[2],
   },
   button: {

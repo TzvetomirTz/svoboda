@@ -9,16 +9,21 @@ import { Inter_800ExtraBold } from '@expo-google-fonts/inter/800ExtraBold';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { applyTheme, loadTheme } from '@/lib/theme';
 import { AppStateProvider } from '@/state/app-state';
 
 // Keep the native launch screen up until fonts load, so it hands over straight to the splash
 // route, which draws the same wordmark in the same place.
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({ fade: true, duration: 200 });
+
+// Before the first render, so no screen draws in the wrong theme first.
+applyTheme(loadTheme());
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -38,6 +43,7 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={styles.root}>
+      <StatusBar style="auto" />
       <AppStateProvider>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" options={{ animation: 'none' }} />
@@ -45,6 +51,7 @@ export default function RootLayout() {
           <Stack.Screen name="create-identity" options={{ animation: 'fade' }} />
           <Stack.Screen name="(main)" options={{ animation: 'fade' }} />
           <Stack.Screen name="contacts" />
+          <Stack.Screen name="settings" />
           <Stack.Screen name="connect" options={{ presentation: 'fullScreenModal' }} />
           <Stack.Screen name="name-contact" options={{ presentation: 'fullScreenModal' }} />
         </Stack>

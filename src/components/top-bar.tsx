@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { BackIcon, CloseIcon, ContactsIcon, PlusIcon } from '@/components/icons';
+import { BackIcon, CloseIcon, ContactsIcon, GearIcon, PlusIcon } from '@/components/icons';
 import { Text } from '@/components/text';
 import { layout, radius, spacing, typography } from '@/constants/theme';
 import { useColors } from '@/hooks/use-colors';
@@ -20,11 +20,19 @@ export function WordmarkBar({ right }: { right?: ReactNode }) {
   );
 }
 
-/** The Contacts link and round plus button of the main screens. */
+/** The Settings and Contacts links and round plus button of the main screens. */
 export function MainActions() {
   const colors = useColors();
   return (
     <View style={styles.actions}>
+      <Pressable
+        onPress={() => router.push('/settings')}
+        accessibilityRole="button"
+        accessibilityLabel="Settings"
+        hitSlop={4}
+        style={styles.iconButton}>
+        <GearIcon color={colors.ink} />
+      </Pressable>
       <Pressable
         onPress={() => router.push('/contacts')}
         accessibilityRole="button"

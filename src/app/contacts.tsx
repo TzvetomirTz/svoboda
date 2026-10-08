@@ -1,6 +1,7 @@
 import { Redirect, router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Screen } from '@/components/screen';
 import { ScreenTitle } from '@/components/screen-title';
@@ -16,13 +17,14 @@ const REMOVE_WIDTH = 96;
 
 export default function Contacts() {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const { identity, contacts, removeContact } = useAppState();
   if (!identity) return <Redirect href="/" />;
 
   return (
     <Screen>
       <NavBar kind="back" right={<RoundButton label="Add someone" onPress={() => router.push('/connect/scan')} />} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={{ paddingBottom: spacing[8] + insets.bottom }}>
         <ScreenTitle>Contacts</ScreenTitle>
 
         <View style={styles.list}>
@@ -78,9 +80,6 @@ function ContactRow({ contact, onRemove }: { contact: Contact; onRemove: () => v
 }
 
 const styles = StyleSheet.create({
-  content: {
-    paddingBottom: spacing[8],
-  },
   list: {
     marginTop: spacing[2],
   },

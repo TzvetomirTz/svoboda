@@ -5,7 +5,7 @@ import { Text } from '@/components/text';
 import { layout, radius } from '@/constants/theme';
 import { useColors } from '@/hooks/use-colors';
 
-type Variant = 'primary' | 'secondary' | 'quiet';
+type Variant = 'primary' | 'secondary' | 'quiet' | 'danger';
 
 export function Button({
   label,
@@ -31,6 +31,7 @@ export function Button({
     primary: { backgroundColor: colors.ink, borderColor: colors.ink, color: colors.paper },
     secondary: { backgroundColor: colors.paper, borderColor: colors.ink, color: colors.ink },
     quiet: { backgroundColor: 'transparent', borderColor: 'transparent', color: colors.ink },
+    danger: { backgroundColor: colors.paper, borderColor: colors.alert, color: colors.alert },
   }[variant];
   const color = disabled && variant !== 'quiet' ? colors.muted : look.color;
 

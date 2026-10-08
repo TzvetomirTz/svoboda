@@ -88,9 +88,11 @@ await save(sharp(square(icon, { fill: PAPER, scale: ANDROID_SCALE })), 'android-
 
 // Cropped tight to the letters; app.json's splash `imageWidth` sets its size on screen.
 const box = await measureInk(square(wordmark, { fill: INK }));
-const launch = Buffer.from(
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box.x} ${box.y} ${box.width} ${box.height}" ` +
-    `width="${box.width * LAUNCH_IMAGE_SCALE}" height="${box.height * LAUNCH_IMAGE_SCALE}">` +
-    `<g fill="${INK}">${wordmark}</g></svg>`,
-);
-await save(sharp(launch), 'splash-icon.png');
+const launch = (fill) =>
+  Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box.x} ${box.y} ${box.width} ${box.height}" ` +
+      `width="${box.width * LAUNCH_IMAGE_SCALE}" height="${box.height * LAUNCH_IMAGE_SCALE}">` +
+      `<g fill="${fill}">${wordmark}</g></svg>`,
+  );
+await save(sharp(launch(INK)), 'splash-icon.png');
+await save(sharp(launch(DARK_INK)), 'splash-icon-dark.png');
