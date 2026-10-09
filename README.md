@@ -110,6 +110,8 @@ With a free Apple ID, a sideloaded app stops opening after 7 days unless it's re
 > [!NOTE]
 > Your identity and contacts stay on the phone as long as you don't delete the app, even if a refresh is missed. A free Apple ID can have three sideloaded apps at a time. These tools sometimes break for a while after an iOS update; check their pages if installing fails.
 
+Have a Mac with Xcode? You can also [build it from source onto your iPhone](#build-it-onto-your-iphone-with-xcode).
+
 <br>
 
 ## For developers
@@ -126,6 +128,59 @@ npx expo start     # then scan the QR code with Expo Go
 ```
 
 Run `npx tsc --noEmit` and `npx expo lint` before committing. After changing an icon master in `assets/`, run `npm run icons`.
+
+</details>
+
+<a id="build-it-onto-your-iphone-with-xcode"></a>
+<details>
+<summary><b>Build it onto your iPhone with Xcode</b></summary>
+
+<br>
+
+Builds Svoboda from source and installs it on your iPhone, signed with your own Apple ID. Needs a Mac with Xcode and a USB cable.
+
+**Once, on the Mac**
+
+```bash
+sudo xcodebuild -license accept
+xcodebuild -runFirstLaunch
+brew install cocoapods
+```
+
+1. In **Xcode → Settings → Apple Accounts**, add your Apple ID. A free one works.
+2. Select it, open **Manage Certificates…**, click **+** and choose **Apple Development**.
+3. Let `codesign` use that certificate without asking. Otherwise macOS asks for your password once for every framework it signs:
+   ```bash
+   security set-key-partition-list -S apple-tool:,apple:,codesign: -s ~/Library/Keychains/login.keychain-db
+   ```
+   Enter your Mac login password. It prints every item in your keychain; let it finish.
+
+**Once, on the iPhone**
+
+1. Connect it by USB, unlock it and tap **Trust This Computer**.
+2. Turn on **Settings → Privacy & Security → Developer Mode**. The phone restarts. If the option isn't there, open Xcode once with the phone connected.
+
+**Build and install**
+
+```bash
+npm install
+npx expo run:ios --device --configuration Release
+```
+
+Pick your iPhone from the list. The first build takes 5–15 minutes; later ones take a few. `Release` puts the JavaScript inside the app, so it runs without the Mac or Metro.
+
+The first time, iOS won't open the app until you trust your certificate: **Settings → General → VPN & Device Management →** your Apple ID **→ Trust**.
+
+With a free Apple ID the app stops opening after 7 days. Connect the phone and run the same command again; your identity and contacts are kept.
+
+**If it fails**
+
+| Error | Fix |
+|---|---|
+| `No code signing certificates are available to use` | Check `security find-identity -v -p codesigning`. If it finds 0 valid identities but Xcode lists your certificate, the Apple WWDR G3 intermediate is missing. Download [`AppleWWDRCAG3.cer`](https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer) and open it to add it to your login keychain. |
+| Bundle identifier can't be registered | `com.oblivionware.svoboda` belongs to another team. Change `ios.bundleIdentifier` in `app.json` to something of your own, then run `npx expo prebuild --clean -p ios`. |
+| Keychain password prompts that don't go away | Press Ctrl+C, run the `set-key-partition-list` command above, then build again. |
+| `invalid code signature … not been explicitly trusted` | The app is installed. Trust your certificate on the iPhone, as above. |
 
 </details>
 
