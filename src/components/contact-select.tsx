@@ -17,7 +17,9 @@ export function ContactSelect({ label }: { label: 'To' | 'From' }) {
   const colors = useColors();
   const { contacts, selectedContact, selectContact } = useAppState();
   const fieldRef = useRef<View>(null);
-  const [menuTop, setMenuTop] = useState<number | null>(null);
+  // Kept after closing so the menu stays in place while the modal fades out.
+  const [menuTop, setMenuTop] = useState(0);
+  const [menuVisible, setMenuVisible] = useState(false);
   const { height: windowHeight } = useWindowDimensions();
 
   function open() {
@@ -25,16 +27,19 @@ export function ContactSelect({ label }: { label: 'To' | 'From' }) {
       router.push('/connect/scan');
       return;
     }
-    fieldRef.current?.measureInWindow((_x, y, _width, height) => setMenuTop(y + height + 14));
+    fieldRef.current?.measureInWindow((_x, y, _width, height) => {
+      setMenuTop(y + height + 14);
+      setMenuVisible(true);
+    });
   }
 
   function choose(id: string) {
     selectContact(id);
-    setMenuTop(null);
+    setMenuVisible(false);
   }
 
   function manage() {
-    setMenuTop(null);
+    setMenuVisible(false);
     router.push('/contacts');
   }
 
@@ -57,18 +62,18 @@ export function ContactSelect({ label }: { label: 'To' | 'From' }) {
       </Pressable>
 
       <Modal
-        visible={menuTop !== null}
+        visible={menuVisible}
         transparent
         statusBarTranslucent
-        animationType="fade"
-        onRequestClose={() => setMenuTop(null)}>
-        <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: SCRIM }]} onPress={() => setMenuTop(null)} />
+        animationType="none"
+        onRequestClose={() => setMenuVisible(false)}>
+        <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: SCRIM }]} onPress={() => setMenuVisible(false)} />
         <View
           accessibilityRole="list"
           accessibilityLabel="Choose contact"
           style={[
             styles.menu,
-            { top: menuTop ?? 0, maxHeight: windowHeight - (menuTop ?? 0) - spacing[8] },
+            { top: menuTop, maxHeight: windowHeight - menuTop - spacing[8] },
             { backgroundColor: colors.paper, borderColor: colors.ink },
           ]}>
           <Text style={[typography.label, styles.menuHeader, { color: colors.muted, borderBottomColor: colors.line }]}>
