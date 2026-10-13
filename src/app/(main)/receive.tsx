@@ -13,6 +13,7 @@ import { layout, spacing, typography } from '@/constants/theme';
 import { useColors } from '@/hooks/use-colors';
 import { decryptMessage, MessageError } from '@/lib/message';
 import { useAppState } from '@/state/app-state';
+import { setSensitiveClipboardString } from '../../../modules/svoboda-secure';
 
 type Result = { kind: 'decrypted'; text: string; at: Date } | { kind: 'error'; message: string } | null;
 
@@ -30,9 +31,18 @@ export default function Receive() {
     if (!identity || !selectedContact) return;
     setBusy(true);
     setCopied(false);
-    const pasted = await Clipboard.getStringAsync();
-
     const contactId = selectedContact.id;
+
+    let pasted: string;
+    try {
+      pasted = await Clipboard.getStringAsync();
+    } catch {
+      // Not logged: the clipboard holds what the user copied.
+      setOpened({ result: { kind: 'error', message: 'Could not read the clipboard. Try again.' }, contactId });
+      setBusy(false);
+      return;
+    }
+
     setTimeout(() => {
       setOpened({ result: open(pasted), contactId });
       setBusy(false);
@@ -52,8 +62,12 @@ export default function Receive() {
       );
       return { kind: 'decrypted', text, at: new Date() };
     } catch (error) {
-      if (!(error instanceof MessageError)) console.error('Could not decrypt message', error);
-      const reason = error instanceof MessageError ? error.reason : 'decrypt';
+      // Deliberately not logged: the error could carry what was pasted or decrypted.
+      // Anything but a failed check is our fault, not the sender's: don't blame the message.
+      if (!(error instanceof MessageError)) {
+        return { kind: 'error', message: 'Could not open this message. Try again.' };
+      }
+      const reason = error.reason;
       return {
         kind: 'error',
         message: {
@@ -66,7 +80,8 @@ export default function Receive() {
   }
 
   async function copyText(text: string) {
-    await Clipboard.setStringAsync(text);
+    // The decrypted text is plaintext: mark it sensitive and keep it on this device, like the ciphertext.
+    await setSensitiveClipboardString(text);
     setCopied(true);
   }
 

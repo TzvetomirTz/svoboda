@@ -2,7 +2,7 @@
   "expo": {
     "name": "Svoboda",
     "slug": "svoboda",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "scheme": "svoboda",
     "userInterfaceStyle": "automatic",
@@ -35,7 +35,8 @@
           }
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      "./plugins/with-refuse-third-party-keyboards"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -4,7 +4,7 @@ import { Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-n
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/button';
-import { CheckIcon } from '@/components/icons';
+import { CheckIcon, ChevronRightIcon } from '@/components/icons';
 import { OblivionWareLogo } from '@/components/oblivionware-logo';
 import { Screen } from '@/components/screen';
 import { ScreenTitle } from '@/components/screen-title';
@@ -14,6 +14,8 @@ import { fonts, layout, spacing, typography } from '@/constants/theme';
 import { useColors } from '@/hooks/use-colors';
 import { formatFingerprint } from '@/lib/fingerprint';
 import { deleteIdentity } from '@/lib/identity';
+import { layoutById } from '@/lib/keyboard/layouts';
+import { useKeyboardPreferences } from '@/lib/keyboard/preferences';
 import { applyTheme, loadTheme, saveTheme, type ThemePreference } from '@/lib/theme';
 import { useAppState } from '@/state/app-state';
 
@@ -31,6 +33,7 @@ export default function Settings() {
   const { identity, setIdentity } = useAppState();
   const [theme, setTheme] = useState(loadTheme);
   const [deleting, setDeleting] = useState(false);
+  const keyboard = useKeyboardPreferences();
 
   if (!identity) return <Redirect href="/" />;
 
@@ -100,6 +103,25 @@ export default function Settings() {
         </View>
 
         <View style={styles.section}>
+          <Text style={[typography.label, styles.sectionLabel, { color: colors.muted }]}>Svoboda keyboard</Text>
+          <View style={{ borderTopColor: colors.line, borderTopWidth: layout.hairline }}>
+            <Pressable
+              onPress={() => router.push('/keyboard-languages')}
+              accessibilityRole="button"
+              accessibilityLabel={`Keyboard languages: ${keyboard.enabled.map((id) => layoutById(id)?.englishName).join(', ')}`}
+              style={({ pressed }) => [styles.row, { borderBottomColor: colors.line }, pressed && styles.pressed]}>
+              <Text style={[styles.rowText, { color: colors.ink }]}>Languages</Text>
+              <View style={styles.rowValue}>
+                <Text style={[typography.code, { color: colors.muted }]}>
+                  {keyboard.enabled.map((id) => layoutById(id)?.code).join(' ')}
+                </Text>
+                <ChevronRightIcon color={colors.ink} size={18} />
+              </View>
+            </Pressable>
+          </View>
+        </View>
+
+        <View style={styles.section}>
           <Text style={[typography.label, styles.sectionLabel, { color: colors.muted }]}>Your identity</Text>
           <View style={[styles.identity, { borderTopColor: colors.line, borderBottomColor: colors.line }]}>
             <Text style={[styles.name, { color: colors.ink }]} numberOfLines={1}>
@@ -158,6 +180,11 @@ const styles = StyleSheet.create({
   },
   rowText: {
     fontSize: 17,
+  },
+  rowValue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
   },
   pressed: {
     opacity: 0.6,

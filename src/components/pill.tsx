@@ -11,7 +11,12 @@ import { useKeyboardVisible } from '@/hooks/use-keyboard-visible';
 // The round switch floating at the bottom of Send/Receive and Add someone/Be added.
 // Use inside expo-router/ui tabs: <TabList asChild><PillBar><TabTrigger asChild><PillButton/>…
 
-export function PillBar({ children, style, ...props }: ViewProps & { children: ReactNode }) {
+export function PillBar({
+  children,
+  style,
+  hidden = false,
+  ...props
+}: ViewProps & { children: ReactNode; hidden?: boolean }) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const keyboardVisible = useKeyboardVisible();
@@ -24,7 +29,7 @@ export function PillBar({ children, style, ...props }: ViewProps & { children: R
         style,
         styles.bar,
         { backgroundColor: colors.ink, bottom: Math.max(insets.bottom, 20) },
-        keyboardVisible && styles.hidden,
+        (keyboardVisible || hidden) && styles.hidden,
       ]}>
       {children}
     </View>

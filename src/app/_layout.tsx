@@ -54,6 +54,7 @@ export default function RootLayout() {
           <Stack.Screen name="(main)" options={{ animation: 'fade' }} />
           <Stack.Screen name="contacts" />
           <Stack.Screen name="settings" />
+          <Stack.Screen name="keyboard-languages" />
           <Stack.Screen name="connect" options={{ presentation: 'fullScreenModal' }} />
           <Stack.Screen name="name-contact" options={{ presentation: 'fullScreenModal' }} />
         </Stack>

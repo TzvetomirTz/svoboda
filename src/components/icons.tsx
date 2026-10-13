@@ -95,6 +95,58 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
+export function ChevronRightIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <Path d="M9 6l6 6-6 6" />
+    </Icon>
+  );
+}
+
+export function ChevronUpIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <Path d="M6 15l6-6 6 6" />
+    </Icon>
+  );
+}
+
+export function KeyboardIcon(props: IconProps) {
+  return (
+    <Icon size={18} {...props}>
+      <Rect x={2} y={5} width={20} height={14} />
+      <Path d="M6 9h0.01M10 9h0.01M14 9h0.01M18 9h0.01M6 13h0.01M18 13h0.01M10 13h4M7 16h10" />
+    </Icon>
+  );
+}
+
+/** Outline arrow for shift off and once; `filled` for caps lock. */
+export function ShiftIcon({ filled = false, ...props }: IconProps & { filled?: boolean }) {
+  return (
+    <Icon size={22} {...props}>
+      <Path d="M12 4l8 8h-4.5v7h-7v-7H4z" fill={filled ? props.color : 'none'} strokeLinejoin="miter" />
+    </Icon>
+  );
+}
+
+export function DeleteIcon(props: IconProps) {
+  return (
+    <Icon size={22} {...props}>
+      <Path d="M8 5h13v14H8l-6-7z" strokeLinejoin="miter" />
+      <Path d="M12 9l6 6M18 9l-6 6" />
+    </Icon>
+  );
+}
+
+export function ReturnIcon(props: IconProps) {
+  return (
+    <Icon size={22} {...props}>
+      <Path d="M19 5v8H6" />
+      <Path d="M9 9l-4 4 4 4" />
+    </Icon>
+  );
+}
+
 // From assets/gear.svg. A filled shape on its own grid, so it doesn't use the stroke Icon above.
 export function GearIcon({ color, size = 20 }: IconProps) {
   return (
