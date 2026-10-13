@@ -8,7 +8,7 @@
 ### Private messages over any messenger.
 
 Svoboda encrypts on your phone with post-quantum cryptography.<br>
-WhatsApp, Telegram or email carry the result. Only the person you wrote to can read it.
+WhatsApp, iMessage or Slack carry the result. Only the person you wrote to can read it.
 
 <br>
 
@@ -48,6 +48,29 @@ WhatsApp, Telegram or email carry the result. Only the person you wrote to can r
 
 <br>
 
+## Which messengers work
+
+A Svoboda message is plain text made of letters, digits, `+` and `/`, so any app that delivers text unchanged can carry it. What decides it is length. Post-quantum keys and signatures are big: even a one-word message comes out at about **5,900 characters**, and every 3 bytes of what you write add 4 more (a Latin letter is 1 byte, a Cyrillic or Greek letter 2, an emoji 4). A message has to arrive in one piece: Svoboda can't put one back together from parts.
+
+| Messenger | Works | Why |
+|---|---|---|
+| **WhatsApp** | Yes | Takes about 65,000 characters per message. |
+| **iMessage** | Yes | No published limit between Apple devices. Not when it falls back to SMS (green bubbles), see SMS. |
+| **Facebook Messenger** | Yes | Takes about 20,000 characters per message. |
+| **Slack** | Yes | Takes 40,000 characters per message. |
+| **Microsoft Teams** | Yes | Takes about 28 KB per post. |
+| **Element** and other Matrix apps | Yes | Takes about 64 KB per message. |
+| **Telegram** | No | Caps a message at 4,096 characters, well short of 5,900, so it can't arrive in one piece. |
+| **Discord** | No | Caps a message at 2,000 characters, or 4,000 with Nitro. Both are too short. |
+| **SMS** | No | A long text is sent as parts of 153 characters each, so a message would need about 39 of them. Many carriers cap how many parts they deliver or convert long texts, and the parts don't reliably arrive whole. |
+| **Signal** | Untested | No published limit. Long messages may be handled differently from short ones. Try it before relying on it. |
+| **Threema** | Untested | Older versions of the app split long messages into several, which would break a Svoboda message. The app's current limit isn't published. |
+| **Viber** | Untested | No published limit for personal chats. |
+
+Limits come from each service's documentation where it publishes one, otherwise from developer and support sources, as of October 2026. Messengers change their limits; if a message won't decrypt, check that it arrived complete.
+
+<br>
+
 ## Under the hood
 
 | | |
@@ -71,7 +94,7 @@ header ("SVM" · version · suite) │ ML-KEM-768 ciphertext │ nonce │ XChaC
 
 Both people's fingerprints are authenticated with the message, so it only opens for the person it was written to, and only when checked against the person who wrote it. The suite byte leaves room for new algorithms, such as FN-DSA once FIPS 206 is final, without breaking existing contacts.
 
-A short message comes out at about 6,000 characters. Messengers like WhatsApp, Telegram and Signal take that easily; SMS doesn't.
+A short message comes out at about 5,900 characters. See [Which messengers work](#which-messengers-work) for where that fits.
 
 Source: [`src/lib/message.ts`](src/lib/message.ts), [`src/lib/contact-card.ts`](src/lib/contact-card.ts).
 
