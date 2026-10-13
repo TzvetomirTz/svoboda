@@ -8,10 +8,9 @@ import {
   type Insets,
   type StyleProp,
   type TextStyle,
-  type ViewStyle,
 } from 'react-native';
 
-import { KEYBOARD } from '@/components/keyboard/geometry';
+import { KEYBOARD, type HitArea } from '@/components/keyboard/geometry';
 import { Text } from '@/components/text';
 import { useColors } from '@/hooks/use-colors';
 import { keyHaptic } from '@/lib/keyboard/haptics';
@@ -24,6 +23,10 @@ export const KEY_LABEL_MAX_SCALE = 1.3;
 /**
  * One key of the Svoboda keyboard: flat surface, 4px radius, `line` while pressed. `ink` is the
  * Encrypt key; `active` is shift on or the language key with its picker open.
+ *
+ * The key is drawn `width` wide, but it takes touches across its whole cell: `hit` says how far
+ * the cell reaches past the drawn key, so taps in the gaps between keys still land on the nearest
+ * one. `ref` is the drawn key, for anchoring the accent strip and the language picker.
  */
 export function Key({
   label,
@@ -41,7 +44,8 @@ export function Key({
   disabled = false,
   selected,
   labelStyle,
-  style,
+  width,
+  hit,
   ref,
 }: {
   label?: string;
@@ -59,7 +63,8 @@ export function Key({
   disabled?: boolean;
   selected?: boolean;
   labelStyle?: StyleProp<TextStyle>;
-  style?: StyleProp<ViewStyle>;
+  width: number;
+  hit: HitArea;
   ref?: Ref<View>;
 }) {
   const colors = useColors();
@@ -68,7 +73,6 @@ export function Key({
 
   return (
     <Pressable
-      ref={ref}
       onPress={onPress}
       onPressIn={() => {
         keyHaptic();
@@ -85,20 +89,31 @@ export function Key({
       accessibilityState={{ disabled, selected }}
       accessibilityActions={accessibilityActions}
       onAccessibilityAction={onAccessibilityAction}
-      style={({ pressed }) => [
-        styles.key,
-        { backgroundColor: filled ? colors.ink : pressed ? colors.line : colors.surface },
-        filled && pressed && styles.pressedFilled,
-        disabled && styles.disabled,
-        style,
-      ]}>
-      {children
-        ? children(color)
-        : label !== undefined && (
-            <Text style={[styles.label, { color }, labelStyle]} maxFontSizeMultiplier={KEY_LABEL_MAX_SCALE}>
-              {label}
-            </Text>
-          )}
+      style={{
+        width: hit.left + width + hit.right,
+        paddingLeft: hit.left,
+        paddingRight: hit.right,
+        paddingTop: hit.top,
+        paddingBottom: hit.bottom,
+      }}>
+      {({ pressed }) => (
+        <View
+          ref={ref}
+          style={[
+            styles.key,
+            { backgroundColor: filled ? colors.ink : pressed ? colors.line : colors.surface },
+            filled && pressed && styles.pressedFilled,
+            disabled && styles.disabled,
+          ]}>
+          {children
+            ? children(color)
+            : label !== undefined && (
+                <Text style={[styles.label, { color }, labelStyle]} maxFontSizeMultiplier={KEY_LABEL_MAX_SCALE}>
+                  {label}
+                </Text>
+              )}
+        </View>
+      )}
     </Pressable>
   );
 }

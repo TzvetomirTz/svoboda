@@ -3,7 +3,15 @@ import { Pressable, StyleSheet, useWindowDimensions, View, type AccessibilityAct
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ChevronDownIcon, DeleteIcon, ReturnIcon, ShiftIcon } from '@/components/icons';
-import { BOTTOM_ROW_FLEX, KEYBOARD, letterKeyWidth } from '@/components/keyboard/geometry';
+import {
+  bottomRow,
+  centeredRow,
+  hitAreas,
+  KEYBOARD,
+  letterKeyWidth,
+  thirdRow,
+  type HitArea,
+} from '@/components/keyboard/geometry';
 import { Key, KEY_LABEL_MAX_SCALE } from '@/components/keyboard/key';
 import { LanguagePicker, type PickerAnchor } from '@/components/keyboard/language-picker';
 import { Text } from '@/components/text';
@@ -97,6 +105,15 @@ export function SvobodaKeyboard({
   const unit = letterKeyWidth(width, [rows[0].length, rows[1].length, rows[2].length]);
   const wideWidth = unit * KEYBOARD.wideKey;
 
+  // Where each key is drawn, and the touch area around it that fills the gaps.
+  const frames = [
+    centeredRow(width, rows[0].map(() => unit)),
+    centeredRow(width, rows[1].map(() => unit)),
+    thirdRow(width, wideWidth, rows[2].map(() => unit)),
+    bottomRow(width),
+  ];
+  const hits = frames.map((row, index) => hitAreas(row, width, index, frames.length));
+
   function typeKey(key: LetterKey, variant?: string) {
     const character = variant ?? key.base;
     if (page === 'letters') {
@@ -166,7 +183,7 @@ export function SvobodaKeyboard({
     onSwitchLanguage(id);
   }
 
-  function letterKey(key: LetterKey, index: number) {
+  function letterKey(key: LetterKey, index: number, hit: HitArea) {
     return (
       <LetterKeyButton
         key={`${key.base}-${index}`}
@@ -174,6 +191,7 @@ export function SvobodaKeyboard({
         label={page === 'letters' && upper ? key.shift : key.base}
         upper={page === 'letters' && upper}
         width={unit}
+        hit={hit}
         onType={(variant) => typeKey(key, variant)}
         onLongPress={(view) => openAccents(view, key)}
         onRelease={() => releaseAccent(key)}
@@ -193,7 +211,7 @@ export function SvobodaKeyboard({
         accessibilityLabel="Svoboda keyboard"
         style={[
           styles.keyboard,
-          { backgroundColor: colors.paper, borderTopColor: colors.ink, paddingBottom: KEYBOARD.bottomPadding + insets.bottom },
+          { backgroundColor: colors.paper, borderTopColor: colors.ink, paddingBottom: insets.bottom },
         ]}>
         <View style={styles.topBar}>
           <View style={styles.status}>
@@ -211,9 +229,9 @@ export function SvobodaKeyboard({
           </Pressable>
         </View>
 
-        <View style={styles.grid}>
-          <View style={styles.row}>{rows[0].map(letterKey)}</View>
-          <View style={styles.row}>{rows[1].map(letterKey)}</View>
+        <View>
+          <View style={styles.row}>{rows[0].map((key, i) => letterKey(key, i, hits[0][i]))}</View>
+          <View style={styles.row}>{rows[1].map((key, i) => letterKey(key, i, hits[1][i]))}</View>
           <View style={styles.row}>
             {page === 'letters' ? (
               <Key
@@ -226,7 +244,8 @@ export function SvobodaKeyboard({
                 selected={upper}
                 tone={upper ? 'active' : 'plain'}
                 onPress={() => setShift((s) => pressShift(s, Date.now(), autoCapitalize, revision))}
-                style={{ width: wideWidth }}>
+                width={wideWidth}
+                hit={hits[2][0]}>
                 {(color) => <ShiftIcon color={color} filled={shown === 'locked'} />}
               </Key>
             ) : (
@@ -235,10 +254,11 @@ export function SvobodaKeyboard({
                 accessibilityLabel={page === 0 ? 'More symbols' : 'Numbers and symbols'}
                 onPress={() => setPage(page === 0 ? 1 : 0)}
                 labelStyle={styles.functionLabel}
-                style={{ width: wideWidth }}
+                width={wideWidth}
+                hit={hits[2][0]}
               />
             )}
-            <View style={styles.thirdRowLetters}>{rows[2].map(letterKey)}</View>
+            {rows[2].map((key, i) => letterKey(key, i, hits[2][i + 1]))}
             <Key
               accessibilityLabel="Delete"
               onPressIn={startDeleteRepeat}
@@ -248,7 +268,8 @@ export function SvobodaKeyboard({
                 if (!deleteRepeat.current.repeated) onDelete();
                 deleteRepeat.current.repeated = false;
               }}
-              style={{ width: wideWidth }}>
+              width={wideWidth}
+              hit={hits[2][rows[2].length + 1]}>
               {(color) => <DeleteIcon color={color} />}
             </Key>
           </View>
@@ -259,7 +280,8 @@ export function SvobodaKeyboard({
               accessibilityLabel={page === 'letters' ? 'Numbers and symbols' : 'Letters'}
               onPress={() => setPage(page === 'letters' ? 0 : 'letters')}
               labelStyle={styles.functionLabel}
-              style={{ flex: BOTTOM_ROW_FLEX[0] }}
+              width={frames[3][0].width}
+              hit={hits[3][0]}
             />
             {page === 'letters' ? (
               <Key
@@ -273,7 +295,8 @@ export function SvobodaKeyboard({
                 onLongPress={openPicker}
                 tone={picker ? 'active' : 'plain'}
                 selected={picker !== null}
-                style={{ flex: BOTTOM_ROW_FLEX[1] }}>
+                width={frames[3][1].width}
+                hit={hits[3][1]}>
                 {(color) => (
                   <>
                     <Text style={[styles.functionLabel, { color }]} maxFontSizeMultiplier={KEY_LABEL_MAX_SCALE}>
@@ -284,7 +307,7 @@ export function SvobodaKeyboard({
                 )}
               </Key>
             ) : (
-              <Key accessibilityLabel="Return" onPress={() => onInsert('\n')} style={{ flex: BOTTOM_ROW_FLEX[1] }}>
+              <Key accessibilityLabel="Return" onPress={() => onInsert('\n')} width={frames[3][1].width} hit={hits[3][1]}>
                 {(color) => <ReturnIcon color={color} />}
               </Key>
             )}
@@ -293,7 +316,8 @@ export function SvobodaKeyboard({
               accessibilityLabel="Space"
               onPress={() => onInsert(' ')}
               labelStyle={[styles.spaceLabel, { color: colors.muted }]}
-              style={{ flex: BOTTOM_ROW_FLEX[2] }}
+              width={frames[3][2].width}
+              hit={hits[3][2]}
             />
             <Key
               label="Encrypt"
@@ -303,7 +327,8 @@ export function SvobodaKeyboard({
               disabled={encryptDisabled}
               onPress={onEncrypt}
               labelStyle={styles.functionLabel}
-              style={{ flex: BOTTOM_ROW_FLEX[3] }}
+              width={frames[3][3].width}
+              hit={hits[3][3]}
             />
           </View>
         </View>
@@ -359,6 +384,7 @@ function LetterKeyButton({
   label,
   upper,
   width,
+  hit,
   onType,
   onLongPress,
   onRelease,
@@ -367,6 +393,7 @@ function LetterKeyButton({
   label: string;
   upper: boolean;
   width: number;
+  hit: HitArea;
   onType: (variant?: string) => void;
   onLongPress: (view: View | null) => void;
   onRelease: () => void;
@@ -389,7 +416,8 @@ function LetterKeyButton({
       onLongPress={hasVariants ? () => onLongPress(ref.current) : undefined}
       onPressOut={onRelease}
       pressRetentionOffset={hasVariants ? ACCENT_RETENTION : undefined}
-      style={{ width }}
+      width={width}
+      hit={hit}
     />
   );
 }
@@ -422,21 +450,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  grid: {
-    gap: KEYBOARD.rowGap,
-    paddingTop: KEYBOARD.topPadding,
-    paddingHorizontal: KEYBOARD.sidePadding,
-  },
+  // Touch cells fill each row edge to edge; the gaps are drawn inside them.
   row: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: KEYBOARD.keyGap,
-  },
-  thirdRowLetters: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: KEYBOARD.keyGap,
   },
   functionLabel: {
     fontSize: 15,

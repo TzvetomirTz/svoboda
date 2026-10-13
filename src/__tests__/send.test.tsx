@@ -1,7 +1,7 @@
 // jest.mock factories can't use imports.
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { Keyboard } from 'react-native';
+import { Dimensions, Keyboard, StyleSheet } from 'react-native';
 
 import Send from '@/app/(main)/send';
 import { encryptMessage } from '@/lib/message';
@@ -140,6 +140,17 @@ describe('Send: typing on the Svoboda keyboard', () => {
     expect(key('Shift on')).toBeTruthy();
     await type('H', 'e', 'y');
     expect(screen.getByText('Hey')).toBeTruthy();
+  });
+
+  it('fills each row edge to edge with touch cells, so taps between keys still land on a key', async () => {
+    await render(<Send />);
+    await openSvobodaKeyboard();
+    const width = Dimensions.get('window').width;
+    const cellWidth = (name: string) => StyleSheet.flatten(key(name).props.style).width as number;
+    const rows = [Array.from('QWERTYUIOP'), Array.from('ASDFGHJKL')];
+    for (const row of rows) {
+      expect(row.reduce((sum, name) => sum + cellWidth(name), 0)).toBeCloseTo(width);
+    }
   });
 
   it('deletes and types space and return', async () => {
