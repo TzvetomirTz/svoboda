@@ -17,19 +17,26 @@ export const KEYBOARD = {
 export const BOTTOM_ROW_FLEX = [1.45, 1.2, 5, 2.3] as const;
 
 /**
- * Width of one letter key, the same in every row so letters line up. The widest row (counting
- * shift and delete as 1.45 keys each) decides it; shorter rows are centred.
+ * Width of one letter key, the same in every row so letters line up, and of shift and delete.
+ *
+ * Shift and delete are 1.45 letter keys wide when there's room. When row 3 is the longest row
+ * (Bulgarian BDS, Ukrainian), wide keys there would shrink every key on the keyboard, so they give
+ * up their extra width first, down to the size of a letter key. Only then do letters get narrower.
  */
-export function letterKeyWidth(width: number, rowLengths: [number, number, number]): number {
+export function keyWidths(width: number, rowLengths: [number, number, number]): { unit: number; wide: number } {
   const inner = width - 2 * KEYBOARD.sidePadding;
-  const rows = [
-    { units: rowLengths[0], keys: rowLengths[0] },
-    { units: rowLengths[1], keys: rowLengths[1] },
-    { units: rowLengths[2] + 2 * KEYBOARD.wideKey, keys: rowLengths[2] + 2 },
-  ];
-  return Math.min(...rows.map(({ units, keys }) => (inner - (keys - 1) * KEYBOARD.keyGap) / units));
-}
+  const fit = (units: number, keys: number) => (inner - (keys - 1) * KEYBOARD.keyGap) / units;
+  const upper = Math.min(fit(rowLengths[0], rowLengths[0]), fit(rowLengths[1], rowLengths[1]));
+  const letters = rowLengths[2];
+  const row3Space = inner - (letters + 1) * KEYBOARD.keyGap;
 
+  // How wide shift and delete can be (in letter keys) without making letters narrower than `upper`.
+  const room = (row3Space / upper - letters) / 2;
+  if (room >= KEYBOARD.wideKey) return { unit: upper, wide: upper * KEYBOARD.wideKey };
+  if (room >= 1) return { unit: upper, wide: upper * room };
+  const unit = row3Space / (letters + 2);
+  return { unit, wide: unit };
+}
 
 /** Where a key is drawn in its row: left edge and width. */
 export type Frame = { x: number; width: number };

@@ -64,7 +64,8 @@ describe('layout contents', () => {
   });
 
   it('follows the sourced rows exactly', () => {
-    expect(letters('bg-bds')).toEqual(['уеишщксдзц', 'ьяаожгтнвмч', 'юйъэфхпрлб']);
+    expect(letters('bg-bds')).toEqual(['уеишщксдзц', 'ьяаожгтнвмч', 'юйъфхпрлб']);
+    expect(layoutById('bg-bds')!.rows[0].find((k) => k.base === 'е')!.variants).toEqual(['э']);
     expect(letters('bg-phonetic')).toEqual(['чшертъуиопящ', 'асдфгхйклюь', 'зжцвбнм']);
     expect(letters('de')).toEqual(['qwertzuiopü', 'asdfghjklöä', 'yxcvbnm']);
     expect(letters('fr')).toEqual(['azertyuiop', 'qsdfghjklm', 'wxcvbn']);

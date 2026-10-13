@@ -8,7 +8,7 @@ import {
   centeredRow,
   hitAreas,
   KEYBOARD,
-  letterKeyWidth,
+  keyWidths,
   thirdRow,
   type HitArea,
 } from '@/components/keyboard/geometry';
@@ -102,8 +102,7 @@ export function SvobodaKeyboard({
     page === 'letters'
       ? layout.rows
       : symbolPages[page].map((row) => row.map((base) => ({ base, shift: base, variants: symbolVariants[base] ?? [] })));
-  const unit = letterKeyWidth(width, [rows[0].length, rows[1].length, rows[2].length]);
-  const wideWidth = unit * KEYBOARD.wideKey;
+  const { unit, wide: wideWidth } = keyWidths(width, [rows[0].length, rows[1].length, rows[2].length]);
 
   // Where each key is drawn, and the touch area around it that fills the gaps.
   const frames = [
