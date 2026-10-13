@@ -60,14 +60,14 @@ A Svoboda message is plain text made of letters, digits, `+` and `/`, so any app
 | **Slack** | Yes | Takes 40,000 characters per message. |
 | **Microsoft Teams** | Yes | Takes about 28 KB per post. |
 | **Element** and other Matrix apps | Yes | Takes about 64 KB per message. |
+| **Viber** | Yes | Tested: messages arrive whole and decrypt. Viber doesn't publish a limit for personal chats. |
 | **Telegram** | No | Caps a message at 4,096 characters, well short of 5,900, so it can't arrive in one piece. |
 | **Discord** | No | Caps a message at 2,000 characters, or 4,000 with Nitro. Both are too short. |
 | **SMS** | No | A long text is sent as parts of 153 characters each, so a message would need about 39 of them. Many carriers cap how many parts they deliver or convert long texts, and the parts don't reliably arrive whole. |
 | **Signal** | Untested | No published limit. Long messages may be handled differently from short ones. Try it before relying on it. |
 | **Threema** | Untested | Older versions of the app split long messages into several, which would break a Svoboda message. The app's current limit isn't published. |
-| **Viber** | Untested | No published limit for personal chats. |
 
-Limits come from each service's documentation where it publishes one, otherwise from developer and support sources, as of October 2026. Messengers change their limits; if a message won't decrypt, check that it arrived complete.
+Viber was tested by sending real messages. The other limits come from each service's documentation where it publishes one, otherwise from developer and support sources, as of October 2026. Messengers change their limits; if a message won't decrypt, check that it arrived complete.
 
 <br>
 
