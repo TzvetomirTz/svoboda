@@ -12,7 +12,7 @@ WhatsApp, iMessage or Slack carry the result. Only the person you wrote to can r
 
 <br>
 
-[![Download for Android](https://img.shields.io/badge/Download-Android-0A0A0A?style=for-the-badge&logo=android&logoColor=white)](https://expo.dev/accounts/oblivionware/projects/svoboda/builds)
+[![Download for Android](https://img.shields.io/badge/Download-Android-0A0A0A?style=for-the-badge&logo=android&logoColor=white)](https://github.com/TzvetomirTz/svoboda/releases/latest)
 &nbsp;
 [![Sideload on iOS](https://img.shields.io/badge/Sideload-iOS-0A0A0A?style=for-the-badge&logo=apple&logoColor=white)](#ios)
 
@@ -106,11 +106,15 @@ Source: [`src/lib/message.ts`](src/lib/message.ts), [`src/lib/contact-card.ts`](
 
 ### Android
 
-1. On your phone, open the [Android download](https://expo.dev/accounts/oblivionware/projects/svoboda/builds) and download the APK.
+1. On your phone, open the [latest release](https://github.com/TzvetomirTz/svoboda/releases/latest) and download `Svoboda-<version>.apk`. No account needed.
 2. Open it. If Android asks, allow your browser or file manager to install unknown apps.
 3. Tap **Install**.
 
 Updates install the same way and keep your identity and contacts.
+
+To check that the APK hasn't been tampered with, compare its SHA-256 with the one in the release notes (`shasum -a 256 Svoboda-<version>.apk`).
+
+Want update notifications? Add `https://github.com/TzvetomirTz/svoboda` to [Obtainium](https://obtainium.imranr.dev).
 
 ### iOS
 
