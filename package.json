@@ -9,6 +9,7 @@
     "@noble/hashes": "^2.4.0",
     "@noble/post-quantum": "^0.7.1",
     "expo": "~57.0.26",
+    "expo-build-properties": "~57.0.22",
     "expo-camera": "~57.0.6",
     "expo-clipboard": "~57.0.2",
     "expo-constants": "~57.0.20",
