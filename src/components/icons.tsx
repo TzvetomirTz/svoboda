@@ -133,7 +133,7 @@ export function DeleteIcon(props: IconProps) {
   return (
     <Icon size={22} {...props}>
       <Path d="M8 5h13v14H8l-6-7z" strokeLinejoin="miter" />
-      <Path d="M12 9l6 6M18 9l-6 6" />
+      <Path d="M11 9l6 6M17 9l-6 6" />
     </Icon>
   );
 }

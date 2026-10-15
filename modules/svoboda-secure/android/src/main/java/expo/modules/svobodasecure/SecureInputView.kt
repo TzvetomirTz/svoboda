@@ -40,6 +40,15 @@ class SecureInputView(context: Context, appContext: AppContext) : ExpoView(conte
     super.onDetachedFromWindow()
   }
 
+  // React Native lays out the children. ExpoView is a LinearLayout, and without these overrides an
+  // Android layout pass (a requestLayout from the EditText, say) would shrink the children to their
+  // content and stack them in a row, away from where React Native's touch handling thinks they are.
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec))
+  }
+
+  override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
+
   private fun isAncestorOf(view: View): Boolean {
     var parent = view.parent
     while (parent != null) {
