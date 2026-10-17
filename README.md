@@ -14,7 +14,7 @@ WhatsApp, iMessage or Slack carry the result. Only the person you wrote to can r
 
 [![Download for Android](https://img.shields.io/badge/Download-Android-0A0A0A?style=for-the-badge&logo=android&logoColor=white)](https://github.com/TzvetomirTz/svoboda/releases/latest)
 &nbsp;
-[![Sideload on iOS](https://img.shields.io/badge/Sideload-iOS-0A0A0A?style=for-the-badge&logo=apple&logoColor=white)](#ios)
+[![Install on iOS](https://img.shields.io/badge/Install-iOS-0A0A0A?style=for-the-badge&logo=apple&logoColor=white)](#ios)
 
 [![ML-KEM-768](https://img.shields.io/badge/ML--KEM--768-FIPS_203-E30613?style=flat-square)](https://csrc.nist.gov/pubs/fips/203/final)
 [![ML-DSA-65](https://img.shields.io/badge/ML--DSA--65-FIPS_204-E30613?style=flat-square)](https://csrc.nist.gov/pubs/fips/204/final)
@@ -118,26 +118,123 @@ Want update notifications? Add `https://github.com/TzvetomirTz/svoboda` to [Obta
 
 ### iOS
 
-Svoboda isn't on the App Store. You can sideload it with your own Apple ID, at no cost:
+Svoboda isn't on the App Store. You build it on a Mac and install it on your iPhone yourself, signed with your own Apple ID. It's free and doesn't depend on anyone else's servers. You'll paste a few commands into Terminal, but you don't need to know how to code.
 
-With a free Apple ID, a sideloaded app stops opening after 7 days unless it's refreshed. That's what sets the tools apart:
+**Know the catch before you start**
 
-| | Computer needed | Refreshing every 7 days | Best for |
-|---|---|---|---|
-| **[SideStore](https://sidestore.io)** · *recommended* | Only for the first setup | On the phone, anywhere with internet | Using Svoboda day to day |
-| **[Sideloadly](https://sideloadly.io)** | Every install | Sideload it again from the computer | Trying Svoboda once |
-| **[AltStore](https://altstore.io)** | Setup and every refresh | Automatic, while the computer is on the same Wi-Fi | People who already use AltStore |
+- **It has to be redone every 7 days.** A free Apple ID signs apps for 7 days. After that, Svoboda won't open until you connect the iPhone to the Mac and run one command again. That takes a few minutes; set a weekly reminder.
+- **Missing a week loses nothing.** Your identity and contacts stay on the phone. The app just won't open until you redo it.
+- **Never delete the app.** Deleting Svoboda deletes your identity and contacts with it. To fix or update it, install over it.
+- **You need a Mac** with room for Xcode (a large download), a USB cable for the iPhone and an Apple ID. A free one works. No Mac? See [Without a Mac](#ios-without-a-mac).
+- **A free Apple ID can have three of these apps on a phone at a time.** Svoboda is one of them.
+- **After an iOS update**, update Xcode from the App Store too before you build again.
 
-**We recommend SideStore** because Svoboda only helps if it opens when a message arrives. After a one-time setup, SideStore refreshes the app on the phone itself, so it doesn't quietly stop working because a computer was out of reach that week. Its setup takes longer than the others; if you only want to try Svoboda, Sideloadly is the quickest start.
+With a paid Apple Developer account ($99/year), the same steps sign the app for a year instead of a week.
 
-1. Install SideStore (or Sideloadly) by following its own guide.
-2. Download `Svoboda-<version>-unsigned.ipa` from the [latest release](https://github.com/TzvetomirTz/svoboda/releases/latest).
-3. Open it with that app and sign in with your Apple ID when asked.
+<a id="build-it-onto-your-iphone-with-xcode"></a>
+#### One-time setup
 
-> [!NOTE]
-> Your identity and contacts stay on the phone as long as you don't delete the app, even if a refresh is missed. A free Apple ID can have three sideloaded apps at a time. These tools sometimes break for a while after an iOS update; check their pages if installing fails.
+This takes about an hour, most of it downloading.
 
-Have a Mac with Xcode? You can also [build it from source onto your iPhone](#build-it-onto-your-iphone-with-xcode).
+To use Terminal, press <kbd>Cmd</kbd>+<kbd>Space</kbd>, type **Terminal** and press <kbd>Return</kbd>. Paste each command, press <kbd>Return</kbd> and wait until it finishes and the prompt (`%`) comes back. When it asks for a password, type your Mac login password. Nothing appears as you type; that's normal.
+
+**1. Install the tools on the Mac**
+
+1. Install **Xcode** from the Mac App Store. Open it once, agree to the terms and, when it asks which platforms to download, include **iOS**.
+2. Install **Node.js**: download the **LTS** installer for macOS from [nodejs.org](https://nodejs.org) and run it.
+3. Install **Homebrew** with the command on [brew.sh](https://brew.sh). At the end it shows **Next steps** with commands to run; run them, or `brew` won't be found. Then:
+   ```bash
+   brew install cocoapods
+   ```
+4. Finish setting up Xcode:
+   ```bash
+   sudo xcodebuild -license accept
+   xcodebuild -runFirstLaunch
+   ```
+
+**2. Add your Apple ID to Xcode**
+
+1. In Xcode, open **Xcode → Settings → Apple Accounts**, click **+** and sign in with your Apple ID.
+2. Select your account, open **Manage Certificates…**, click **+** and choose **Apple Development**. Click **Done** and quit Xcode.
+3. Let your Mac sign the app without asking for your password over and over:
+   ```bash
+   security set-key-partition-list -S apple-tool:,apple:,codesign: -s ~/Library/Keychains/login.keychain-db
+   ```
+   Enter your Mac login password. It prints a long list; let it finish.
+
+**3. Download Svoboda**
+
+```bash
+cd ~
+git clone https://github.com/TzvetomirTz/svoboda.git
+cd svoboda
+npm ci
+```
+
+This puts Svoboda in a `svoboda` folder in your home folder. `npm ci` may print warnings; they're fine.
+
+**4. Choose your own app ID**
+
+Apple needs every app to have its own ID, and Svoboda's is already taken. Make one up, such as `com.yourname.svoboda` (letters, numbers, dots and hyphens, no spaces), and save it:
+
+```bash
+echo "SVOBODA_BUNDLE_ID=com.yourname.svoboda" > .env
+```
+
+Keep this ID for good. iOS treats a different ID as a different app, which would start out empty.
+
+**5. Prepare the iPhone**
+
+1. Connect it to the Mac by USB, unlock it and tap **Trust This Computer**.
+2. Turn on **Settings → Privacy & Security → Developer Mode**. The phone restarts; unlock it and tap **Turn On**. If the option isn't there, open Xcode with the phone connected, wait a minute, then look again.
+
+#### Install it
+
+With the iPhone connected and unlocked:
+
+```bash
+cd ~/svoboda
+npm run iphone
+```
+
+Pick your iPhone from the list with the arrow keys and press <kbd>Return</kbd>. The first time takes 5–15 minutes; keep the phone unlocked until Svoboda appears on it.
+
+The first time, iOS won't open the app until you trust your Apple ID: **Settings → General → VPN & Device Management →** your Apple ID **→ Trust**.
+
+#### Every week
+
+Connect the iPhone, unlock it and run the same two commands. You can do it any time before the 7 days are up; each run starts a new 7 days. It's also how you get back in if the app has stopped opening.
+
+#### Updating Svoboda
+
+```bash
+cd ~/svoboda
+git pull
+npm ci
+npm run iphone
+```
+
+Your identity and contacts are kept.
+
+#### If something goes wrong
+
+| What you see | What to do |
+|---|---|
+| `command not found: brew` | Run the **Next steps** commands Homebrew showed at the end of its install, or open a new Terminal window. |
+| `command not found: npm` | Install Node.js (step 1), then open a new Terminal window. |
+| Your iPhone isn't in the list | Unlock it, check the cable, tap **Trust This Computer** and make sure Developer Mode is on (step 5). |
+| `No profiles for '…' were found` | Open **Xcode → Settings → Apple Accounts**. If your account shows an error or asks you to sign in, sign in again. Then run `npm run iphone` again. |
+| Bundle identifier can't be registered or isn't available | Someone else has that ID. If Svoboda has never been installed on this phone, pick another ID in step 4 and run `npm run iphone` again. |
+| `No code signing certificates are available to use` | Download [`AppleWWDRCAG3.cer`](https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer) and open it to add it to your keychain, then try again. If that's not it, redo step 2. |
+| The Mac keeps asking for your password | Press <kbd>Ctrl</kbd>+<kbd>C</kbd>, run the command from step 2.3, then run `npm run iphone` again. |
+| `invalid code signature … not been explicitly trusted`, or **Untrusted Developer** on the phone | The app is installed. Trust your Apple ID on the iPhone, as in [Install it](#install-it). |
+| `EPERM: operation not permitted` or `Sandbox: … deny` | This happens after building with Xcode's ▶ button. Run `npm run iphone` again; it starts from a clean project. |
+| Svoboda stopped opening | Its 7 days are up. Do the [weekly step](#every-week). |
+
+<a id="ios-without-a-mac"></a>
+#### Without a Mac
+
+[Sideloadly](https://sideloadly.io) runs on Windows and macOS. Download `Svoboda-<version>-unsigned.ipa` from the [latest release](https://github.com/TzvetomirTz/svoboda/releases/latest), open it in Sideloadly and sign in with your Apple ID. The same 7-day limit applies: install it from the computer again each week. [SideStore](https://sidestore.io) and [AltStore](https://altstore.io) can refresh it for you, but SideStore depends on servers that are often down, and AltStore needs the computer on the same Wi-Fi.
 
 <br>
 
@@ -155,59 +252,6 @@ npx expo start     # then scan the QR code with Expo Go
 ```
 
 Run `npx tsc --noEmit` and `npx expo lint` before committing. After changing an icon master in `assets/`, run `npm run icons`.
-
-</details>
-
-<a id="build-it-onto-your-iphone-with-xcode"></a>
-<details>
-<summary><b>Build it onto your iPhone with Xcode</b></summary>
-
-<br>
-
-Builds Svoboda from source and installs it on your iPhone, signed with your own Apple ID. Needs a Mac with Xcode and a USB cable.
-
-**Once, on the Mac**
-
-```bash
-sudo xcodebuild -license accept
-xcodebuild -runFirstLaunch
-brew install cocoapods
-```
-
-1. In **Xcode → Settings → Apple Accounts**, add your Apple ID. A free one works.
-2. Select it, open **Manage Certificates…**, click **+** and choose **Apple Development**.
-3. Let `codesign` use that certificate without asking. Otherwise macOS asks for your password once for every framework it signs:
-   ```bash
-   security set-key-partition-list -S apple-tool:,apple:,codesign: -s ~/Library/Keychains/login.keychain-db
-   ```
-   Enter your Mac login password. It prints every item in your keychain; let it finish.
-
-**Once, on the iPhone**
-
-1. Connect it by USB, unlock it and tap **Trust This Computer**.
-2. Turn on **Settings → Privacy & Security → Developer Mode**. The phone restarts. If the option isn't there, open Xcode once with the phone connected.
-
-**Build and install**
-
-```bash
-npm install
-npx expo run:ios --device --configuration Release
-```
-
-Pick your iPhone from the list. The first build takes 5–15 minutes; later ones take a few. `Release` puts the JavaScript inside the app, so it runs without the Mac or Metro.
-
-The first time, iOS won't open the app until you trust your certificate: **Settings → General → VPN & Device Management →** your Apple ID **→ Trust**.
-
-With a free Apple ID the app stops opening after 7 days. Connect the phone and run the same command again; your identity and contacts are kept.
-
-**If it fails**
-
-| Error | Fix |
-|---|---|
-| `No code signing certificates are available to use` | Check `security find-identity -v -p codesigning`. If it finds 0 valid identities but Xcode lists your certificate, the Apple WWDR G3 intermediate is missing. Download [`AppleWWDRCAG3.cer`](https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer) and open it to add it to your login keychain. |
-| Bundle identifier can't be registered | `com.oblivionware.svoboda` belongs to another team. Change `ios.bundleIdentifier` in `app.json` to something of your own, then run `npx expo prebuild --clean -p ios`. |
-| Keychain password prompts that don't go away | Press Ctrl+C, run the `set-key-partition-list` command above, then build again. |
-| `invalid code signature … not been explicitly trusted` | The app is installed. Trust your certificate on the iPhone, as above. |
 
 </details>
 
