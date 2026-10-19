@@ -4,7 +4,8 @@ import { bytesToHex, fromBase64, hexToBytes, toBase64 } from './encoding';
 import { fingerprint } from './fingerprint';
 
 // Public keys aren't secret, so contacts live in the app's sandboxed documents folder
-// (encrypted by the OS while the phone is locked) rather than the size-limited keychain.
+// (encrypted by the OS while the phone is locked, and kept out of backups by lib/backup.ts) rather
+// than the size-limited keychain.
 const file = new File(Paths.document, 'contacts.json');
 
 export type Contact = {

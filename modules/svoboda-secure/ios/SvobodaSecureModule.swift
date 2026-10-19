@@ -23,6 +23,15 @@ public final class SvobodaSecureModule: Module {
       )
     }.runOnQueue(.main)
 
+    // Keeps a file or folder (and everything inside a folder) out of iCloud and computer backups.
+    // Set on the folder itself, so files written there later are covered too.
+    Function("excludeFromBackup") { (url: URL) in
+      var url = url
+      var values = URLResourceValues()
+      values.isExcludedFromBackup = true
+      try url.setResourceValues(values)
+    }
+
     // Android only: touches from React Native are filtered at the window there.
     AsyncFunction("filterObscuredTouches") {}
 

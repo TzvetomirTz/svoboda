@@ -53,6 +53,9 @@ class SvobodaSecureModule : Module() {
       if (filterTouches) applyTouchFilter()
     }
 
+    // iOS only. Android backups are switched off in the manifest (plugins/with-no-android-backup.js).
+    Function("excludeFromBackup") { _: String -> }
+
     // iOS only. On Android, FLAG_SECURE (from expo-screen-capture) already blanks the recents thumbnail.
     AsyncFunction("enableBackgroundCover") {}
 

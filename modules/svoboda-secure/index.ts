@@ -12,6 +12,7 @@ type SvobodaSecureModule = {
   setSensitiveString(text: string, expiresInSeconds: number): Promise<void>;
   filterObscuredTouches(): Promise<void>;
   enableBackgroundCover(): Promise<void>;
+  excludeFromBackup(uri: string): void;
 };
 
 const native = requireOptionalNativeModule<SvobodaSecureModule>('SvobodaSecure');
@@ -36,6 +37,11 @@ export async function filterObscuredTouches(): Promise<void> {
 /** iOS: show the launch screen over the app whenever it isn't active, for the app switcher. */
 export async function enableBackgroundCover(): Promise<void> {
   await native?.enableBackgroundCover();
+}
+
+/** iOS: keep a file or folder, and everything inside a folder, out of iCloud and computer backups. */
+export function excludeFromBackup(uri: string): void {
+  native?.excludeFromBackup(uri);
 }
 
 /**

@@ -12,7 +12,12 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-secure-store",
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": false
+        }
+      ],
       [
         "expo-local-authentication",
         {
@@ -46,6 +51,7 @@
       ],
       "expo-status-bar",
       "./plugins/with-refuse-third-party-keyboards",
+      "./plugins/with-no-android-backup",
       [
         "expo-build-properties",
         {
@@ -78,6 +84,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.oblivionware.svoboda",
+      "allowBackup": false,
       "permissions": [
         "android.permission.CAMERA"
       ]
