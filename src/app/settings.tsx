@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -155,6 +156,9 @@ export default function Settings() {
           <OblivionWareLogo color={colors.muted} size={14} />
           <Text style={[typography.caption, { color: colors.muted }]}>Powered by OblivionWare</Text>
         </Pressable>
+        <Text style={[typography.caption, styles.version, { color: colors.muted }]}>
+          Post-quantum · v{Constants.expoConfig?.version}
+        </Text>
       </ScrollView>
     </Screen>
   );
@@ -218,5 +222,9 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     marginTop: 'auto',
     paddingTop: spacing[12],
+  },
+  version: {
+    marginTop: spacing[2],
+    textAlign: 'center',
   },
 });

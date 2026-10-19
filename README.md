@@ -79,6 +79,7 @@ Viber was tested by sending real messages. The other limits come from each servi
 | **Signatures** | ML-DSA-65 (FIPS 204) proves who wrote it |
 | **Message cipher** | XChaCha20-Poly1305, keyed through HKDF-SHA256 |
 | **Your keys** | Kept in the phone's keychain, never synced to another device |
+| **App lock** | Face ID, fingerprint or the phone's passcode to open; locks again whenever it goes to the background |
 | **Contacts** | Public keys only, stored on your phone. No servers, no accounts |
 
 <details>

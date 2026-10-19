@@ -79,6 +79,9 @@ should suggest) protection against a compromised phone or OS.
 - [ ] Screen recording / mirroring (iOS): the app is covered while capture is active. Screenshot: content blank.
 - [ ] Android: screenshots refused; the recents thumbnail is blank.
 - [ ] App switcher (iOS): shows the white (or black in dark mode) launch screen with "Svoboda.", never a message.
+- [ ] App lock: opening Svoboda asks for Face ID / fingerprint / passcode before any contact or message shows. Cancel stays on the lock screen; Unlock asks again.
+- [ ] App lock: send to the background from Send, Receive (with a decrypted message) and Add someone; coming back asks again and the same screen and text are there after unlocking. Android back does nothing on the lock screen.
+- [ ] App lock: Android camera permission prompt on Add someone doesn't lock the app; pulling down Control Center (iOS) doesn't either.
 - [ ] iOS with a third-party keyboard installed (e.g. Gboard, SwiftKey) and selected as default: inside Svoboda only Apple's keyboard appears.
 - [ ] Android: with Gboard, type in the message box with the system keyboard. The word shouldn't show up later as a suggestion elsewhere (IME_FLAG_NO_PERSONALIZED_LEARNING).
 - [ ] Android: with an overlay app drawing over Svoboda (e.g. a screen-dimmer), taps on keys and the message box are ignored.

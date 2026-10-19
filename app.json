@@ -2,7 +2,7 @@
   "expo": {
     "name": "Svoboda",
     "slug": "svoboda",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "portrait",
     "scheme": "svoboda",
     "userInterfaceStyle": "automatic",
@@ -13,6 +13,12 @@
       "expo-router",
       "expo-font",
       "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Svoboda uses Face ID to unlock, so only you can open your messages."
+        }
+      ],
       [
         "expo-camera",
         {

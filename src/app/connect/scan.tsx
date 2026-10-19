@@ -12,6 +12,7 @@ import { useColors } from '@/hooks/use-colors';
 import { decodeContactCard, FrameAssembler, InvalidContactCardError } from '@/lib/contact-card';
 import { bytesToHex } from '@/lib/encoding';
 import { fingerprint } from '@/lib/fingerprint';
+import { useAppLock } from '@/state/app-lock';
 import { useAppState } from '@/state/app-state';
 
 // The viewfinder is always dark, whatever the theme.
@@ -28,6 +29,7 @@ export default function Scan() {
   const focused = useIsFocused();
   const [permission, requestPermission] = useCameraPermissions();
   const { identity, contacts, setScannedCard } = useAppState();
+  const { withoutLocking } = useAppLock();
   const [status, setStatus] = useState<Status>({ kind: 'looking' });
   const assembler = useRef(new FrameAssembler());
   const done = useRef(false);
@@ -110,7 +112,7 @@ export default function Scan() {
                 : 'Svoboda needs the camera to scan the other person’s code.'}
             </Text>
             {permission?.canAskAgain !== false && (
-              <Button label="Allow camera" variant="secondary" onPress={requestPermission} style={styles.allow} />
+              <Button label="Allow camera" variant="secondary" onPress={() => withoutLocking(requestPermission)} style={styles.allow} />
             )}
           </View>
         )}
